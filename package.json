@@ -1,0 +1,74 @@
+{
+  "name": "cc-switch",
+  "version": "1.0.0",
+  "description": "Quick TUI for switching Claude Code API providers - fast provider/token switching when quota is exhausted",
+  "main": "dist/index.js",
+  "bin": {
+    "cc-switch": "./dist/index.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "ts-node src/index.ts",
+    "link": "npm link",
+    "prepublishOnly": "npm run build",
+    "pretest": "npm run build",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "version": "git add .",
+    "postversion": "git push && git push --tags"
+  },
+  "keywords": [
+    "claude",
+    "claude-code",
+    "cli",
+    "switcher",
+    "anthropic",
+    "api",
+    "provider",
+    "tui",
+    "terminal",
+    "config",
+    "configuration"
+  ],
+  "author": "supertiny99 <supertiny99@gmail.com>",
+  "license": "MIT",
+  "type": "commonjs",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/supertiny99/cc-switch.git"
+  },
+  "bugs": {
+    "url": "https://github.com/supertiny99/cc-switch/issues"
+  },
+  "homepage": "https://github.com/supertiny99/cc-switch#readme",
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "os": [
+    "darwin",
+    "linux",
+    "win32"
+  ],
+  "dependencies": {
+    "chalk": "^5.6.2",
+    "commander": "^12.1.0",
+    "fs-extra": "^11.3.3",
+    "ink": "^4.4.1",
+    "lodash": "^4.17.23",
+    "prompts": "^2.4.2",
+    "react": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^11.0.4",
+    "@types/lodash": "^4.17.23",
+    "@types/node": "^25.0.10",
+    "@types/prompts": "^2.4.9",
+    "@types/react": "^19.2.10",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  }
+}
