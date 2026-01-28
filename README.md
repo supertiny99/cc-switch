@@ -17,7 +17,7 @@
 ### 全局安装
 
 ```bash
-npm install -g cc-switch
+npm install -g @supertiny99/cc-switch
 ```
 
 ### 本地开发
@@ -228,8 +228,8 @@ npm login --registry=https://registry.npmjs.org --auth-only
 ### 3. 检查包名是否可用
 
 ```bash
-npm search cc-switch
-# 或访问 https://www.npmjs.com/package/cc-switch
+npm search @supertiny99/cc-switch
+# 或访问 https://www.npmjs.com/package/@supertiny99/cc-switch
 ```
 
 ### 4. 发布流程
@@ -244,7 +244,7 @@ npm version major  # 1.0.0 -> 2.0.0
 npm publish
 
 # 3. 验证发布
-npm view cc-switch
+npm view @supertiny99/cc-switch
 ```
 
 ### 5. 发布选项
@@ -267,10 +267,10 @@ npm publish --tag beta
 
 ```bash
 # 全局安装测试
-npm install -g cc-switch
+npm install -g @supertiny99/cc-switch
 
 # 或使用 npx 直接运行
-npx cc-switch list
+npx @supertiny99/cc-switch list
 ```
 
 ## 发布检查清单
