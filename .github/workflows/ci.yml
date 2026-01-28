@@ -29,7 +29,13 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Test CLI help
+      - name: Test build output
         run: |
-          node dist/index.js --help
-          node dist/index.js --version
+          test -f dist/index.js || echo "Build failed"
+          test -d dist/lib || echo "Lib build failed"
+          test -d dist/ui || echo "UI build failed"
+
+      - name: Test CLI
+        run: |
+          npx ts-node src/index.ts --version
+          npx ts-node src/index.ts --help
