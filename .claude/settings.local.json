@@ -21,7 +21,10 @@
       "Bash(git remote add:*)",
       "Bash(git branch:*)",
       "Bash(git push:*)",
-      "Bash(git tag:*)"
+      "Bash(git tag:*)",
+      "Bash(tree:*)",
+      "mcp__sequential-thinking__sequentialthinking",
+      "Skill(readme-i18n)"
     ]
   }
 }

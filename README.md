@@ -1,5 +1,7 @@
 # cc-switch
 
+[English](README.en.md) | [中文](README.zh-CN.md)
+
 > 快速切换 Claude Code API 提供商的 TUI 工具
 
 当 token 额度用尽时，可以快速切换到另一个提供商/token。
