@@ -52,3 +52,12 @@ export async function deleteProfile(profileId: string): Promise<void> {
   }
   await fs.remove(profilePath);
 }
+
+export async function updateProfile(profile: ProviderProfile): Promise<void> {
+  await fs.ensureDir(PROFILES_DIR);
+  const profilePath = path.join(PROFILES_DIR, `${profile.id}.json`);
+  if (!(await fs.pathExists(profilePath))) {
+    throw new Error(`Profile not found: ${profile.id}`);
+  }
+  await fs.writeJSON(profilePath, profile, { spaces: 2 });
+}

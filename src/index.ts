@@ -2,7 +2,7 @@
 import { Command } from 'commander';
 import { quickSelect } from './ui/quick-select';
 import { listProfiles, loadProfile, loadSettings, getCurrentProvider } from './lib/config/loader';
-import { applyProfile, listBackups, restoreBackup, deleteProfile } from './lib/config/writer';
+import { applyProfile, listBackups, restoreBackup, deleteProfile, updateProfile } from './lib/config/writer';
 import { PROVIDER_PRESETS, createProfileFromPreset, saveProfile, profileExists, sanitizeId } from './lib/config/creator';
 import chalk from 'chalk';
 import prompts from 'prompts';
@@ -116,6 +116,13 @@ program
       console.log(`  Haiku Model: ${chalk.gray(settings.env?.ANTHROPIC_DEFAULT_HAIKU_MODEL || 'default')}`);
       console.log(`  Sonnet Model: ${chalk.gray(settings.env?.ANTHROPIC_DEFAULT_SONNET_MODEL || 'default')}`);
       console.log(`  Opus Model: ${chalk.gray(settings.env?.ANTHROPIC_DEFAULT_OPUS_MODEL || 'default')}`);
+
+      // Try to find and display the profile description
+      const profiles = await listProfiles();
+      const currentProfile = profiles.find(p => p.id === current);
+      if (currentProfile?.description) {
+        console.log(`  Description: ${chalk.gray(currentProfile.description)}`);
+      }
     } catch (err: any) {
       console.error(chalk.red(`Error: ${err.message}`));
       process.exit(1);
@@ -344,6 +351,134 @@ program
     } catch (err: any) {
       if (err.message === 'User cancelled') {
         console.log(chalk.yellow('Cancelled'));
+        return;
+      }
+      console.error(chalk.red(`Error: ${err.message}`));
+      process.exit(1);
+    }
+  });
+
+program
+  .command('edit')
+  .alias('modify')
+  .description('Edit an existing provider profile')
+  .action(async () => {
+    try {
+      const profiles = await listProfiles();
+      if (profiles.length === 0) {
+        console.log(chalk.yellow('No profiles found.'));
+        return;
+      }
+
+      const { profileId } = await prompts({
+        type: 'select',
+        name: 'profileId',
+        message: 'Select profile to edit:',
+        choices: profiles.map(p => ({
+          title: `${p.icon} ${p.name}`,
+          description: `${p.id}${p.description ? ' - ' + p.description : ''}`,
+          value: p.id
+        }))
+      });
+
+      if (!profileId) {
+        console.log(chalk.yellow('Cancelled'));
+        return;
+      }
+
+      const profile = await loadProfile(profileId);
+      const currentEnv = profile.config.env;
+
+      console.log(chalk.bold(`\nEditing: ${profile.icon} ${profile.name} (${profile.id})\n`));
+
+      // Prompt for editable fields with current values as defaults
+      const answers = await prompts([
+        {
+          type: 'text',
+          name: 'name',
+          message: 'Profile name:',
+          initial: profile.name
+        },
+        {
+          type: 'text',
+          name: 'description',
+          message: 'Description:',
+          initial: profile.description || ''
+        },
+        {
+          type: 'password',
+          name: 'token',
+          message: 'API token (leave empty to keep current):',
+          initial: ''
+        },
+        {
+          type: 'text',
+          name: 'baseUrl',
+          message: 'Base URL (leave empty to keep current):',
+          initial: currentEnv.ANTHROPIC_BASE_URL || ''
+        },
+        {
+          type: 'text',
+          name: 'haikuModel',
+          message: 'Haiku model (leave empty to keep current):',
+          initial: currentEnv.ANTHROPIC_DEFAULT_HAIKU_MODEL || ''
+        },
+        {
+          type: 'text',
+          name: 'sonnetModel',
+          message: 'Sonnet model (leave empty to keep current):',
+          initial: currentEnv.ANTHROPIC_DEFAULT_SONNET_MODEL || ''
+        },
+        {
+          type: 'text',
+          name: 'opusModel',
+          message: 'Opus model (leave empty to keep current):',
+          initial: currentEnv.ANTHROPIC_DEFAULT_OPUS_MODEL || ''
+        }
+      ]);
+
+      // Build updated profile
+      const updatedProfile: typeof profile = {
+        ...profile,
+        name: answers.name || profile.name,
+        description: answers.description || profile.description,
+        config: {
+          env: {
+            ANTHROPIC_AUTH_TOKEN: answers.token || currentEnv.ANTHROPIC_AUTH_TOKEN
+          }
+        }
+      };
+
+      // Add optional fields only if provided
+      if (answers.baseUrl) {
+        updatedProfile.config.env.ANTHROPIC_BASE_URL = answers.baseUrl;
+      } else if (currentEnv.ANTHROPIC_BASE_URL) {
+        updatedProfile.config.env.ANTHROPIC_BASE_URL = currentEnv.ANTHROPIC_BASE_URL;
+      }
+
+      if (answers.haikuModel) {
+        updatedProfile.config.env.ANTHROPIC_DEFAULT_HAIKU_MODEL = answers.haikuModel;
+      } else if (currentEnv.ANTHROPIC_DEFAULT_HAIKU_MODEL) {
+        updatedProfile.config.env.ANTHROPIC_DEFAULT_HAIKU_MODEL = currentEnv.ANTHROPIC_DEFAULT_HAIKU_MODEL;
+      }
+
+      if (answers.sonnetModel) {
+        updatedProfile.config.env.ANTHROPIC_DEFAULT_SONNET_MODEL = answers.sonnetModel;
+      } else if (currentEnv.ANTHROPIC_DEFAULT_SONNET_MODEL) {
+        updatedProfile.config.env.ANTHROPIC_DEFAULT_SONNET_MODEL = currentEnv.ANTHROPIC_DEFAULT_SONNET_MODEL;
+      }
+
+      if (answers.opusModel) {
+        updatedProfile.config.env.ANTHROPIC_DEFAULT_OPUS_MODEL = answers.opusModel;
+      } else if (currentEnv.ANTHROPIC_DEFAULT_OPUS_MODEL) {
+        updatedProfile.config.env.ANTHROPIC_DEFAULT_OPUS_MODEL = currentEnv.ANTHROPIC_DEFAULT_OPUS_MODEL;
+      }
+
+      await updateProfile(updatedProfile);
+      console.log(chalk.green(`\n✓ Profile "${updatedProfile.name}" updated successfully!`));
+    } catch (err: any) {
+      if (err.message === 'User cancelled') {
+        console.log(chalk.yellow('\nCancelled'));
         return;
       }
       console.error(chalk.red(`Error: ${err.message}`));
