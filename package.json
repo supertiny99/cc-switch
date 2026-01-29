@@ -19,7 +19,12 @@
     "pretest": "npm run build",
     "test": "echo \"Error: no test specified\" && exit 1",
     "version": "git add .",
-    "postversion": "git push && git push --tags"
+    "postversion": "git push && git push --tags",
+    "push": "git push && git push --tags",
+    "release": "npm run build && npm run push",
+    "release:patch": "npm version patch && npm run push",
+    "release:minor": "npm version minor && npm run push",
+    "release:major": "npm version major && npm run push"
   },
   "keywords": [
     "claude",
