@@ -41,7 +41,10 @@ export async function listProfiles(): Promise<ProviderProfile[]> {
 export function getCurrentProvider(settings: Settings): string | null {
   const baseUrl = settings.env?.ANTHROPIC_BASE_URL;
   if (!baseUrl) return 'anthropic';
-  if (baseUrl.includes('bigmodel.cn')) return 'zhipu';
+  if (baseUrl.includes('open.bigmodel.cn/api/anthropic')) return 'zhipu-coding';
+  if (baseUrl.includes('bigmodel.cn')) return 'zhipu-coding';
+  if (baseUrl.includes('openrouter.ai')) return 'openrouter';
   if (baseUrl.includes('api.anthropic.com')) return 'anthropic';
+  if (baseUrl.includes('workers.dev')) return 'cloudflare-worker';
   return 'custom';
 }

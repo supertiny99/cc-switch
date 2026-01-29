@@ -6,6 +6,7 @@ import { Settings, ProviderProfile } from './schema';
 const CLAUDE_DIR = path.join(os.homedir(), '.claude');
 const SETTINGS_FILE = path.join(CLAUDE_DIR, 'settings.json');
 const BACKUP_DIR = path.join(CLAUDE_DIR, 'cc-switch-backups');
+const PROFILES_DIR = path.join(CLAUDE_DIR, 'profiles');
 
 export async function backupSettings(): Promise<string> {
   await fs.ensureDir(BACKUP_DIR);
@@ -42,4 +43,12 @@ export async function restoreBackup(backupFile: string): Promise<void> {
     throw new Error(`Backup not found: ${backupFile}`);
   }
   await fs.copy(backupPath, SETTINGS_FILE);
+}
+
+export async function deleteProfile(profileId: string): Promise<void> {
+  const profilePath = path.join(PROFILES_DIR, `${profileId}.json`);
+  if (!(await fs.pathExists(profilePath))) {
+    throw new Error(`Profile not found: ${profileId}`);
+  }
+  await fs.remove(profilePath);
 }
