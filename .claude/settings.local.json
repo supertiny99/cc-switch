@@ -24,7 +24,8 @@
       "Bash(git tag:*)",
       "Bash(tree:*)",
       "mcp__sequential-thinking__sequentialthinking",
-      "Skill(readme-i18n)"
+      "Skill(readme-i18n)",
+      "Bash(npm unlink:*)"
     ]
   }
 }
