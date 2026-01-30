@@ -38,7 +38,7 @@ export const PROVIDER_PRESETS: ProviderPreset[] = [
     icon: '💻',
     baseUrl: 'https://open.bigmodel.cn/api/anthropic',
     defaultModels: {
-      haiku: 'glm-4.7',
+      haiku: 'glm-4.5-air',
       sonnet: 'glm-4.7',
       opus: 'glm-4.7'
     }
