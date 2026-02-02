@@ -1,6 +1,6 @@
 {
   "name": "@supertiny99/cc-switch",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Quick TUI for switching Claude Code API providers - fast provider/token switching when quota is exhausted",
   "main": "dist/index.js",
   "bin": {
