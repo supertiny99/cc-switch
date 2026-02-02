@@ -32,6 +32,3 @@ coverage/
 .eslintcache
 
 .claude/
-
-# Lock files
-package-lock.json
