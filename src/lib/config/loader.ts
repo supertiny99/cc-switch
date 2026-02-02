@@ -48,3 +48,7 @@ export function getCurrentProvider(settings: Settings): string | null {
   if (baseUrl.includes('workers.dev')) return 'cloudflare-worker';
   return 'custom';
 }
+
+export function getCurrentProfileId(settings: Settings): string | null {
+  return (settings as any)['cc-switch-current-profile'] || null;
+}

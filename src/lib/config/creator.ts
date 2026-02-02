@@ -94,18 +94,22 @@ export function createProfileFromPreset(
     customHaiku?: string;
     customSonnet?: string;
     customOpus?: string;
+    customIcon?: string;
+    customApiTimeout?: string;
+    disableNonEssentialTraffic?: string;
   } = {}
 ): ProviderProfile {
   const name = options.customName || preset.name;
   const id = sanitizeId(options.customName || preset.id);
   const description = options.customDescription || preset.description;
   const baseUrl = options.customBaseUrl || preset.baseUrl;
+  const icon = options.customIcon || preset.icon;
 
   const profile: ProviderProfile = {
     id,
     name,
     description,
-    icon: preset.icon,
+    icon,
     config: {
       env: {
         ANTHROPIC_AUTH_TOKEN: token,
@@ -130,6 +134,14 @@ export function createProfileFromPreset(
   const opusModel = options.customOpus || preset.defaultModels?.opus;
   if (opusModel) {
     profile.config.env.ANTHROPIC_DEFAULT_OPUS_MODEL = opusModel;
+  }
+
+  if (options.customApiTimeout) {
+    profile.config.env.API_TIMEOUT_MS = options.customApiTimeout;
+  }
+
+  if (options.disableNonEssentialTraffic) {
+    profile.config.env.CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC = options.disableNonEssentialTraffic;
   }
 
   return profile;

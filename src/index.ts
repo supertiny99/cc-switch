@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
 import { quickSelect } from './ui/quick-select';
-import { listProfiles, loadProfile, loadSettings, getCurrentProvider } from './lib/config/loader';
+import { listProfiles, loadProfile, loadSettings, getCurrentProvider, getCurrentProfileId } from './lib/config/loader';
 import { applyProfile, listBackups, restoreBackup, deleteProfile, updateProfile } from './lib/config/writer';
 import { PROVIDER_PRESETS, createProfileFromPreset, saveProfile, profileExists, sanitizeId } from './lib/config/creator';
 import chalk from 'chalk';
@@ -31,7 +31,7 @@ program
       }
 
       const settings = await loadSettings();
-      const current = getCurrentProvider(settings);
+      const current = getCurrentProfileId(settings);
 
       const { profileId } = await prompts({
         type: 'select',
@@ -83,7 +83,7 @@ program
     try {
       const profiles = await listProfiles();
       const settings = await loadSettings();
-      const current = getCurrentProvider(settings);
+      const current = getCurrentProfileId(settings);
 
       if (profiles.length === 0) {
         console.log(chalk.yellow('No profiles found. Create profiles in ~/.claude/profiles/'));
@@ -108,18 +108,33 @@ program
   .action(async () => {
     try {
       const settings = await loadSettings();
-      const current = getCurrentProvider(settings);
+      const profileId = getCurrentProfileId(settings);
+
+      // Try to find and display the full profile
+      const profiles = await listProfiles();
+      const currentProfile = profiles.find(p => p.id === profileId);
 
       console.log(chalk.bold('Current Configuration:'));
-      console.log(`  Provider: ${chalk.cyan(current || 'unknown')}`);
+
+      if (currentProfile) {
+        console.log(`  Profile: ${chalk.cyan(currentProfile.icon + ' ' + currentProfile.name)} (${chalk.gray(currentProfile.id)})`);
+      } else {
+        console.log(`  Profile: ${chalk.gray('unknown')}`);
+      }
+
       console.log(`  Base URL: ${chalk.gray(settings.env?.ANTHROPIC_BASE_URL || 'default')}`);
       console.log(`  Haiku Model: ${chalk.gray(settings.env?.ANTHROPIC_DEFAULT_HAIKU_MODEL || 'default')}`);
       console.log(`  Sonnet Model: ${chalk.gray(settings.env?.ANTHROPIC_DEFAULT_SONNET_MODEL || 'default')}`);
       console.log(`  Opus Model: ${chalk.gray(settings.env?.ANTHROPIC_DEFAULT_OPUS_MODEL || 'default')}`);
 
-      // Try to find and display the profile description
-      const profiles = await listProfiles();
-      const currentProfile = profiles.find(p => p.id === current);
+      if (settings.env?.API_TIMEOUT_MS) {
+        console.log(`  API Timeout: ${chalk.gray(settings.env.API_TIMEOUT_MS + 'ms')}`);
+      }
+
+      if (settings.env?.CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC) {
+        console.log(`  Disable Non-Essential Traffic: ${chalk.gray(settings.env.CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC)}`);
+      }
+
       if (currentProfile?.description) {
         console.log(`  Description: ${chalk.gray(currentProfile.description)}`);
       }
@@ -205,7 +220,7 @@ program
         customBaseUrl = baseUrl;
       }
 
-      // Ask for custom name
+      // Ask for custom name and description
       const { useCustomName } = await prompts({
         type: 'confirm',
         name: 'useCustomName',
@@ -214,15 +229,24 @@ program
       });
 
       let customName = '';
+      let customDescription = '';
       if (useCustomName) {
-        const { name } = await prompts({
-          type: 'text',
-          name: 'name',
-          message: 'Enter profile name:',
-          validate: (val: string) => val.trim().length > 0 || 'Name is required'
-        });
-        if (!name) return;
-        customName = name;
+        const nameDesc = await prompts([
+          {
+            type: 'text',
+            name: 'name',
+            message: 'Enter profile name:',
+            validate: (val: string) => val.trim().length > 0 || 'Name is required'
+          },
+          {
+            type: 'text',
+            name: 'description',
+            message: 'Enter description (optional):'
+          }
+        ]);
+        if (!nameDesc.name) return;
+        customName = nameDesc.name;
+        customDescription = nameDesc.description;
       }
 
       // Check for existing profile
@@ -278,13 +302,54 @@ program
         customOpus = models.opus;
       }
 
+      // Optional: Icon
+      const { icon } = await prompts({
+        type: 'text',
+        name: 'icon',
+        message: 'Icon (emoji):',
+        initial: selectedPreset.icon || '📦'
+      });
+
+      // Optional: Advanced settings
+      const { advancedSettings } = await prompts({
+        type: 'confirm',
+        name: 'advancedSettings',
+        message: 'Configure advanced settings?',
+        initial: false
+      });
+
+      let customApiTimeout: string | undefined;
+      let disableNonEssentialTraffic: string | undefined;
+
+      if (advancedSettings) {
+        const advanced = await prompts([
+          {
+            type: 'text',
+            name: 'apiTimeout',
+            message: 'API timeout (ms, leave empty for default):'
+          },
+          {
+            type: 'confirm',
+            name: 'disableTraffic',
+            message: 'Disable non-essential traffic?',
+            initial: false
+          }
+        ]);
+        if (advanced.apiTimeout) customApiTimeout = advanced.apiTimeout;
+        if (advanced.disableTraffic) disableNonEssentialTraffic = 'true';
+      }
+
       // Create profile
       const profile = createProfileFromPreset(selectedPreset, token, {
         customName: customName || undefined,
+        customDescription: customDescription || undefined,
         customBaseUrl,
         customHaiku,
         customSonnet,
-        customOpus
+        customOpus,
+        customIcon: icon,
+        customApiTimeout,
+        disableNonEssentialTraffic
       });
 
       // Save profile

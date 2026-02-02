@@ -2,12 +2,12 @@ import prompts from 'prompts';
 import chalk from 'chalk';
 import { loadProfile, listProfiles } from '../lib/config/loader';
 import { applyProfile } from '../lib/config/writer';
-import { loadSettings, getCurrentProvider } from '../lib/config/loader';
+import { loadSettings, getCurrentProfileId } from '../lib/config/loader';
 
 export async function quickSelect(): Promise<void> {
   const profiles = await listProfiles();
   const settings = await loadSettings();
-  const current = getCurrentProvider(settings);
+  const current = getCurrentProfileId(settings);
 
   if (profiles.length === 0) {
     console.log(chalk.yellow('No profiles found. Create profiles in ~/.claude/profiles/'));
