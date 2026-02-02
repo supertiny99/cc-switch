@@ -30,3 +30,5 @@ coverage/
 
 # Optional eslint cache
 .eslintcache
+
+.claude/

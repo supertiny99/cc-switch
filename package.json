@@ -17,8 +17,9 @@
     "link": "npm link",
     "link:global": "npm run build && npm link -g cc-switch",
     "prepublishOnly": "npm run build",
-    "pretest": "npm run build",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "test:coverage": "vitest --coverage",
     "version": "git add .",
     "postversion": "git push && git push --tags",
     "push": "git push && git push --tags",
@@ -74,7 +75,9 @@
     "@types/node": "^25.0.10",
     "@types/prompts": "^2.4.9",
     "@types/react": "^19.2.10",
+    "@vitest/coverage-v8": "^4.0.18",
     "ts-node": "^10.9.2",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.18"
   }
 }
