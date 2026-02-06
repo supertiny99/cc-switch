@@ -1,6 +1,6 @@
 # cc-switch
 
-[English](README.en.md) | [中文](README.zh-CN.md)
+[English](README.en.md) | [中文](README.md)
 
 > 快速切换 Claude Code API 提供商的 TUI 工具
 
@@ -29,6 +29,32 @@ git clone <repo-url>
 cd cc-switch
 npm install
 npm link  # 链接到本地环境
+```
+
+## 更新
+
+### 更新到最新版本
+
+```bash
+npm update -g @supertiny99/cc-switch
+```
+
+或者
+
+```bash
+npm install -g @supertiny99/cc-switch@latest
+```
+
+### 检查当前版本
+
+```bash
+cc-switch --version
+```
+
+### 查看可用版本
+
+```bash
+npm view @supertiny99/cc-switch versions
 ```
 
 ## 快速开始
@@ -63,10 +89,16 @@ cc-switch
 
 输入 `zh` 即可快速定位到 "Zhipu AI"，按 Enter 确认。
 
-### 4. 直接切换
+### 4. 直接切换到指定提供商
 
 ```bash
 cc-switch use anthropic
+```
+
+或使用交互式选择：
+
+```bash
+cc-switch use
 ```
 
 ## 配置文件
@@ -110,11 +142,16 @@ cc-switch use anthropic
 | 命令 | 说明 |
 |------|------|
 | `cc-switch` | 交互式选择提供商 |
-| `cc-switch use <id>` | 直接切换到指定提供商 |
+| `cc-switch add` | 添加新的提供商配置 |
+| `cc-switch use [profile-id]` | 切换到指定提供商（可选参数，不提供则交互式选择） |
 | `cc-switch list` | 列出所有可用提供商 |
 | `cc-switch current` | 显示当前配置 |
+| `cc-switch edit` / `cc-switch modify` | 编辑现有提供商配置 |
+| `cc-switch delete` / `cc-switch rm` | 删除提供商配置 |
 | `cc-switch history` | 查看备份历史 |
 | `cc-switch restore <file>` | 从备份恢复 |
+| `cc-switch --version` | 显示版本号 |
+| `cc-switch --help` | 显示帮助信息 |
 
 ## 开发
 

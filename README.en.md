@@ -1,6 +1,6 @@
 # cc-switch
 
-[English](README.en.md) | [中文](README.zh-CN.md)
+[English](README.en.md) | [中文](README.md)
 
 > A TUI tool for quickly switching Claude Code API providers
 
@@ -29,6 +29,32 @@ git clone <repo-url>
 cd cc-switch
 npm install
 npm link  # Link to local environment
+```
+
+## Update
+
+### Update to Latest Version
+
+```bash
+npm update -g @supertiny99/cc-switch
+```
+
+Or:
+
+```bash
+npm install -g @supertiny99/cc-switch@latest
+```
+
+### Check Current Version
+
+```bash
+cc-switch --version
+```
+
+### View Available Versions
+
+```bash
+npm view @supertiny99/cc-switch versions
 ```
 
 ## Quick Start
@@ -63,10 +89,16 @@ cc-switch
 
 Type `zh` to quickly locate "Zhipu AI", then press Enter to confirm.
 
-### 4. Direct Switch
+### 4. Switch to Specified Provider
 
 ```bash
 cc-switch use anthropic
+```
+
+Or use interactive selection:
+
+```bash
+cc-switch use
 ```
 
 ## Configuration Files
@@ -110,11 +142,16 @@ Create a JSON file in `~/.claude/profiles/`:
 | Command | Description |
 |---------|-------------|
 | `cc-switch` | Interactive provider selection |
-| `cc-switch use <id>` | Switch directly to specified provider |
+| `cc-switch add` | Add a new provider profile |
+| `cc-switch use [profile-id]` | Switch to specified provider (optional argument, interactive if not provided) |
 | `cc-switch list` | List all available providers |
 | `cc-switch current` | Display current configuration |
+| `cc-switch edit` / `cc-switch modify` | Edit an existing provider profile |
+| `cc-switch delete` / `cc-switch rm` | Delete a provider profile |
 | `cc-switch history` | View backup history |
 | `cc-switch restore <file>` | Restore from backup |
+| `cc-switch --version` | Display version number |
+| `cc-switch --help` | Display help information |
 
 ## Development
 
