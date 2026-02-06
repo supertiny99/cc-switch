@@ -20,9 +20,9 @@ program
   });
 
 program
-  .command('use')
+  .command('use [profile-id]')
   .description('Switch to a provider profile')
-  .action(async () => {
+  .action(async (profileIdArg?: string) => {
     try {
       const profiles = await listProfiles();
       if (profiles.length === 0) {
@@ -30,23 +30,30 @@ program
         return;
       }
 
-      const settings = await loadSettings();
-      const current = getCurrentProfileId(settings);
+      let profileId = profileIdArg;
 
-      const { profileId } = await prompts({
-        type: 'select',
-        name: 'profileId',
-        message: 'Select profile:',
-        choices: profiles.map(p => ({
-          title: `${p.id === current ? '✓ ' : ''}${p.icon} ${p.name}`,
-          description: p.description || p.id,
-          value: p.id
-        }))
-      });
-
+      // If no profile ID provided, show interactive selection
       if (!profileId) {
-        console.log(chalk.yellow('Cancelled'));
-        return;
+        const settings = await loadSettings();
+        const current = getCurrentProfileId(settings);
+
+        const response = await prompts({
+          type: 'select',
+          name: 'profileId',
+          message: 'Select profile:',
+          choices: profiles.map(p => ({
+            title: `${p.id === current ? '✓ ' : ''}${p.icon} ${p.name}`,
+            description: p.description || p.id,
+            value: p.id
+          }))
+        });
+
+        profileId = response.profileId;
+
+        if (!profileId) {
+          console.log(chalk.yellow('Cancelled'));
+          return;
+        }
       }
 
       const profile = await loadProfile(profileId);

@@ -16,15 +16,21 @@ npm run dev -- [command]           # e.g., npm run dev -- list
 npm run build
 
 # Link for local testing (installs as global command)
-npm link
+npm run link:global                 # Build + link in one command
 
 # Unlink after testing
 npm unlink -g cc-switch
 
+# Testing (vitest)
+npm test                            # Run tests in watch mode
+npm run test:run                    # Run tests once
+npm run test:coverage               # Run tests with coverage
+
 # Publish to npm (automated via GitHub Actions)
-npm version patch|minor|major
-git push origin main
-git push origin v1.x.x
+npm version patch|minor|major       # Bump version and push
+npm run release:patch               # Quick patch release
+npm run release:minor               # Quick minor release
+npm run release:major               # Quick major release
 ```
 
 ## Architecture
@@ -39,7 +45,8 @@ src/
 ├── lib/config/
 │   ├── schema.ts         # TypeScript interfaces (ProviderProfile, Settings)
 │   ├── loader.ts         # Config loading functions
-│   └── writer.ts         # Config writing + backup/restore
+│   ├── writer.ts         # Config writing + backup/restore
+│   └── creator.ts        # Provider profile creation and presets
 └── ui/
     └── quick-select.ts   # Interactive TUI (prompts library)
 ```
@@ -48,6 +55,9 @@ src/
 
 **CLI Commands (src/index.ts)**: Defines all CLI commands using Commander.js:
 - `cc-switch` - Interactive provider selection
+- `cc-switch add` - Add a new provider profile with interactive setup
+- `cc-switch delete` / `cc-switch rm` - Delete a provider profile
+- `cc-switch edit` / `cc-switch modify` - Edit an existing provider profile
 - `cc-switch use <id>` - Direct switch to profile
 - `cc-switch list` - List available profiles
 - `cc-switch current` - Show current config
@@ -59,16 +69,27 @@ src/
 - `loadProfile(id)` - Reads `~/.claude/profiles/{id}.json`
 - `listProfiles()` - Lists all available profiles
 - `getCurrentProvider(settings)` - Detects current provider from BASE_URL
+- `getCurrentProfileId(settings)` - Gets current profile ID from settings
+
+**Config Creator (src/lib/config/creator.ts)**: Provider profile creation:
+- `PROVIDER_PRESETS` - Array of 5 provider presets (Anthropic, Zhipu GLM Coding, OpenRouter, Cloudflare Worker, Custom)
+- `createProfileFromPreset()` - Creates a profile from a preset with customizations
+- `saveProfile()` - Saves profile to disk
+- `sanitizeId()` - Sanitizes profile ID for safe filenames
+- `profileExists()` - Checks if a profile already exists
 
 **Config Writer (src/lib/config/writer.ts)**: Functions for writing configurations:
 - `applyProfile(profile)` - Applies profile config (auto-backups first)
 - `backupSettings()` - Creates timestamped backup in `~/.claude/cc-switch-backups/`
 - `listBackups()` - Lists backup files
 - `restoreBackup(file)` - Restores from backup
+- `deleteProfile(id)` - Deletes a profile file
+- `updateProfile(profile)` - Updates an existing profile
 
 ### Configuration Structure
 
 **Provider Profile** (`~/.claude/profiles/{id}.json`):
+
 ```json
 {
   "id": "provider-id",
@@ -81,7 +102,9 @@ src/
       "ANTHROPIC_BASE_URL": "https://api.example.com",
       "ANTHROPIC_DEFAULT_HAIKU_MODEL": "model-name",
       "ANTHROPIC_DEFAULT_SONNET_MODEL": "model-name",
-      "ANTHROPIC_DEFAULT_OPUS_MODEL": "model-name"
+      "ANTHROPIC_DEFAULT_OPUS_MODEL": "model-name",
+      "API_TIMEOUT_MS": "30000",
+      "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "true"
     }
   }
 }
@@ -91,11 +114,25 @@ src/
 
 ### Provider Detection Logic
 
-In `loader.ts:41-47`, providers are detected by inspecting `ANTHROPIC_BASE_URL`:
+In `loader.ts:41-49`, providers are detected by inspecting `ANTHROPIC_BASE_URL`:
 - No URL → "anthropic"
-- Contains "bigmodel.cn" → "zhipu"
-- Contains "api.anthropic.com" → "anthropic"
+- Contains `open.bigmodel.cn/api/anthropic` → "zhipu-coding"
+- Contains `bigmodel.cn` → "zhipu-coding"
+- Contains `openrouter.ai` → "openrouter"
+- Contains `api.anthropic.com` → "anthropic"
+- Contains `workers.dev` → "cloudflare-worker"
 - Anything else → "custom"
+
+### Provider Presets
+
+The `creator.ts` module includes 5 built-in provider presets:
+- **anthropic** - Official Anthropic API
+- **zhipu-coding** - Zhipu GLM Coding Plan (编程套餐)
+- **openrouter** - OpenRouter AI (200+ models)
+- **cloudflare-worker** - Cloudflare Worker Claude Proxy
+- **custom** - Custom API endpoint (requires base URL)
+
+These presets are used by the `cc-switch add` command to quickly create profiles with pre-configured models and settings.
 
 ## Adding New Features
 
@@ -126,17 +163,31 @@ Add functions to `loader.ts` (for reading) or `writer.ts` (for writing/backup op
 - **prompts** - Interactive terminal UI
 - **chalk** - Terminal styling
 - **fs-extra** - File operations
+- **ink** - React-like library for terminal UI (reserved for future use)
+- **lodash** - Utility library
+- **vitest** - Testing framework
 - **TypeScript** - Compiled to CommonJS via tsc
 
 ## Testing
 
-No automated tests exist. Manual testing workflow:
+Vitest is configured for testing:
+
+```bash
+npm test            # Run tests in watch mode
+npm run test:run    # Run tests once
+npm run test:coverage  # Run tests with coverage
+```
+
+Manual testing workflow:
 
 ```bash
 npm link           # Link for testing
+cc-switch add      # Add a new profile
 cc-switch list     # List profiles
 cc-switch current  # Show current config
 cc-switch use <id> # Switch provider
+cc-switch edit     # Edit a profile
+cc-switch delete   # Delete a profile
 cc-switch history  # Check backups
 cc-switch restore <file>  # Restore backup
 ```
