@@ -24,6 +24,8 @@
 npm install -g @supertiny99/cc-switch
 ```
 
+安装后可以使用 `cc-switch` 或简短别名 `ccs` 命令（两者完全等价）。
+
 ### 本地开发
 
 ```bash
@@ -50,6 +52,8 @@ npm install -g @supertiny99/cc-switch@latest
 ### 检查当前版本
 
 ```bash
+ccs --version
+# 或
 cc-switch --version
 ```
 
@@ -61,10 +65,12 @@ npm view @supertiny99/cc-switch versions
 
 ## 快速开始
 
+> **提示**: 所有命令都可以使用 `ccs` 替代 `cc-switch`，例如 `ccs list`、`ccs use` 等。
+
 ### 1. 查看当前配置
 
 ```bash
-cc-switch current
+ccs current
 ```
 
 输出：
@@ -80,13 +86,13 @@ Current Configuration:
 ### 2. 列出所有提供商
 
 ```bash
-cc-switch list
+ccs list
 ```
 
 ### 3. 交互式切换
 
 ```bash
-cc-switch
+ccs
 ```
 
 输入 `zh` 即可快速定位到 "Zhipu AI"，按 Enter 确认。
@@ -94,13 +100,13 @@ cc-switch
 ### 4. 直接切换到指定提供商
 
 ```bash
-cc-switch use anthropic
+ccs use anthropic
 ```
 
 或使用交互式选择：
 
 ```bash
-cc-switch use
+ccs use
 ```
 
 ### 5. 保存当前配置
@@ -108,7 +114,7 @@ cc-switch use
 当外部工具（如 API proxy、其他配置管理工具）直接修改了 `~/.claude/settings.json` 后，可以使用 `save` 命令将当前配置保存为一个新的 profile：
 
 ```bash
-cc-switch save
+ccs save
 ```
 
 该命令会：
@@ -136,10 +142,10 @@ Token:    sk-d7f0...6060
 ✓ Saved as "Example Proxy" (example-proxy)
 ```
 
-**自动保存提示**：当执行 `cc-switch use` 切换配置时，如果当前配置未保存，系统会自动提示是否保存：
+**自动保存提示**：当执行 `ccs use` 切换配置时，如果当前配置未保存，系统会自动提示是否保存：
 
 ```bash
-$ cc-switch use anthropic
+$ ccs use anthropic
 
 ⚠️  Current configuration is not saved
 ? Save current config before switching? (Y/n) › Yes
@@ -189,20 +195,22 @@ $ cc-switch use anthropic
 
 ## 命令参考
 
+> **提示**: 所有 `cc-switch` 命令都可以用 `ccs` 替代。
+
 | 命令 | 说明 |
 |------|------|
-| `cc-switch` | 交互式选择提供商 |
-| `cc-switch add` | 添加新的提供商配置 |
-| `cc-switch save` | **保存当前配置为新 profile**（外部工具修改配置后使用） |
-| `cc-switch use [profile-id]` | 切换到指定提供商（可选参数，不提供则交互式选择）<br/>**自动检测未保存配置并提示保存** |
-| `cc-switch list` | 列出所有可用提供商 |
-| `cc-switch current` | 显示当前配置 |
-| `cc-switch edit` / `cc-switch modify` | 编辑现有提供商配置 |
-| `cc-switch delete` / `cc-switch rm` | 删除提供商配置 |
-| `cc-switch history` | 查看备份历史 |
-| `cc-switch restore <file>` | 从备份恢复 |
-| `cc-switch --version` | 显示版本号 |
-| `cc-switch --help` | 显示帮助信息 |
+| `ccs` / `cc-switch` | 交互式选择提供商 |
+| `ccs add` | 添加新的提供商配置 |
+| `ccs save` | **保存当前配置为新 profile**（外部工具修改配置后使用） |
+| `ccs use [profile-id]` | 切换到指定提供商（可选参数，不提供则交互式选择）<br/>**自动检测未保存配置并提示保存** |
+| `ccs list` | 列出所有可用提供商 |
+| `ccs current` | 显示当前配置 |
+| `ccs edit` / `ccs modify` | 编辑现有提供商配置 |
+| `ccs delete` / `ccs rm` | 删除提供商配置 |
+| `ccs history` | 查看备份历史 |
+| `ccs restore <file>` | 从备份恢复 |
+| `ccs --version` | 显示版本号 |
+| `ccs --help` | 显示帮助信息 |
 
 ## 开发
 

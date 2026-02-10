@@ -6,6 +6,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 `cc-switch` is a CLI tool for quickly switching Claude Code API providers. When an API token quota is exhausted, users can switch to another provider/token in 1-2 seconds using an interactive TUI.
 
+**Command aliases**: Both `cc-switch` and `ccs` commands are available (fully equivalent). All documentation uses `ccs` for brevity.
+
 ## Development Commands
 
 ```bash
@@ -55,16 +57,16 @@ src/
 ### Key Modules
 
 **CLI Commands (src/index.ts)**: Defines all CLI commands using Commander.js:
-- `cc-switch` - Interactive provider selection
-- `cc-switch add` - Add a new provider profile with interactive setup
-- `cc-switch save` - Save current config as a new profile (v1.1.0+)
-- `cc-switch delete` / `cc-switch rm` - Delete a provider profile
-- `cc-switch edit` / `cc-switch modify` - Edit an existing provider profile
-- `cc-switch use <id>` - Direct switch to profile (with auto-save prompt for unknown configs, v1.1.0+)
-- `cc-switch list` - List available profiles
-- `cc-switch current` - Show current config
-- `cc-switch history` - Show backup history
-- `cc-switch restore <file>` - Restore from backup
+- `ccs` / `cc-switch` - Interactive provider selection
+- `ccs add` - Add a new provider profile with interactive setup
+- `ccs save` - Save current config as a new profile (v1.1.0+)
+- `ccs delete` / `ccs rm` - Delete a provider profile
+- `ccs edit` / `ccs modify` - Edit an existing provider profile
+- `ccs use <id>` - Direct switch to profile (with auto-save prompt for unknown configs, v1.1.0+)
+- `ccs list` - List available profiles
+- `ccs current` - Show current config
+- `ccs history` - Show backup history
+- `ccs restore <file>` - Restore from backup
 
 **Config Loader (src/lib/config/loader.ts)**: Functions for reading configurations:
 - `loadSettings()` - Reads `~/.claude/settings.json`
@@ -195,14 +197,14 @@ Manual testing workflow:
 
 ```bash
 npm link           # Link for testing
-cc-switch add      # Add a new profile
-cc-switch list     # List profiles
-cc-switch current  # Show current config
-cc-switch use <id> # Switch provider
-cc-switch edit     # Edit a profile
-cc-switch delete   # Delete a profile
-cc-switch history  # Check backups
-cc-switch restore <file>  # Restore backup
+ccs add            # Add a new profile
+ccs list           # List profiles
+ccs current        # Show current config
+ccs use <id>       # Switch provider
+ccs edit           # Edit a profile
+ccs delete         # Delete a profile
+ccs history        # Check backups
+ccs restore <file> # Restore backup
 ```
 
 ## Deployment

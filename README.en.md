@@ -24,6 +24,8 @@ When your token quota is exhausted, you can quickly switch to another provider/t
 npm install -g @supertiny99/cc-switch
 ```
 
+After installation, you can use either `cc-switch` or the shorter alias `ccs` (both are fully equivalent).
+
 ### Local Development
 
 ```bash
@@ -50,6 +52,8 @@ npm install -g @supertiny99/cc-switch@latest
 ### Check Current Version
 
 ```bash
+ccs --version
+# or
 cc-switch --version
 ```
 
@@ -61,10 +65,12 @@ npm view @supertiny99/cc-switch versions
 
 ## Quick Start
 
+> **Tip**: All commands can use `ccs` instead of `cc-switch`, e.g., `ccs list`, `ccs use`, etc.
+
 ### 1. Check Current Configuration
 
 ```bash
-cc-switch current
+ccs current
 ```
 
 Output:
@@ -80,13 +86,13 @@ Current Configuration:
 ### 2. List All Providers
 
 ```bash
-cc-switch list
+ccs list
 ```
 
 ### 3. Interactive Switch
 
 ```bash
-cc-switch
+ccs
 ```
 
 Type `zh` to quickly locate "Zhipu AI", then press Enter to confirm.
@@ -94,13 +100,13 @@ Type `zh` to quickly locate "Zhipu AI", then press Enter to confirm.
 ### 4. Switch to Specified Provider
 
 ```bash
-cc-switch use anthropic
+ccs use anthropic
 ```
 
 Or use interactive selection:
 
 ```bash
-cc-switch use
+ccs use
 ```
 
 ### 5. Save Current Configuration
@@ -108,7 +114,7 @@ cc-switch use
 When external tools (like API proxies or other config management tools) directly modify `~/.claude/settings.json`, you can use the `save` command to save the current configuration as a new profile:
 
 ```bash
-cc-switch save
+ccs save
 ```
 
 The command will:
@@ -136,10 +142,10 @@ Token:    sk-d7f0...6060
 ✓ Saved as "Example Proxy" (example-proxy)
 ```
 
-**Auto-save prompt**: When executing `cc-switch use` to switch configurations, if the current config is not saved, the system will automatically prompt whether to save:
+**Auto-save prompt**: When executing `ccs use` to switch configurations, if the current config is not saved, the system will automatically prompt whether to save:
 
 ```bash
-$ cc-switch use anthropic
+$ ccs use anthropic
 
 ⚠️  Current configuration is not saved
 ? Save current config before switching? (Y/n) › Yes
@@ -189,14 +195,16 @@ Create a JSON file in `~/.claude/profiles/`:
 
 ## Command Reference
 
+> **Tip**: All `cc-switch` commands can use `ccs` as an alias.
+
 | Command | Description |
 |---------|-------------|
-| `cc-switch` | Interactive provider selection |
-| `cc-switch add` | Add a new provider profile |
-| `cc-switch save` | **Save current config as new profile** (use after external tools modify config) |
-| `cc-switch use [profile-id]` | Switch to specified provider (optional argument, interactive if not provided)<br/>**Auto-detect unsaved configs and prompt to save** |
-| `cc-switch list` | List all available providers |
-| `cc-switch current` | Display current configuration |
+| `ccs` / `cc-switch` | Interactive provider selection |
+| `ccs add` | Add a new provider profile |
+| `ccs save` | **Save current config as new profile** (use after external tools modify config) |
+| `ccs use [profile-id]` | Switch to specified provider (optional argument, interactive if not provided)<br/>**Auto-detect unsaved configs and prompt to save** |
+| `ccs list` | List all available providers |
+| `ccs current` | Display current configuration |
 | `cc-switch edit` / `cc-switch modify` | Edit an existing provider profile |
 | `cc-switch delete` / `cc-switch rm` | Delete a provider profile |
 | `cc-switch history` | View backup history |

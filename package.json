@@ -4,7 +4,8 @@
   "description": "Quick TUI for switching Claude Code API providers - fast provider/token switching when quota is exhausted",
   "main": "dist/index.js",
   "bin": {
-    "cc-switch": "./dist/index.js"
+    "cc-switch": "./dist/index.js",
+    "ccs": "./dist/index.js"
   },
   "files": [
     "dist",

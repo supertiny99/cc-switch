@@ -12,7 +12,7 @@ const program = new Command();
 
 program
   .name('cc-switch')
-  .description('Quick Claude Code configuration switcher')
+  .description('Quick Claude Code configuration switcher (also available as "ccs")')
   .version('1.1.0');
 
 program
