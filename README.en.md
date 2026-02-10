@@ -11,6 +11,8 @@ When your token quota is exhausted, you can quickly switch to another provider/t
 - 🔄 **Quick Switch** - Complete provider switch in 1-2 seconds
 - 🎨 **Interactive Selection** - Friendly interface with fuzzy search support
 - 🔒 **Auto Backup** - Automatically backs up config before each switch
+- 💾 **Save Current Config** - Quickly save externally modified configs as new profiles
+- 🔔 **Smart Prompts** - Auto-prompt to save unsaved configs before switching
 - 📦 **Extensible** - Reserved interfaces for MCP, skills, and plugin switching
 - 🌍 **Multi-provider** - Supports any Anthropic API-compatible provider
 
@@ -101,6 +103,54 @@ Or use interactive selection:
 cc-switch use
 ```
 
+### 5. Save Current Configuration
+
+When external tools (like API proxies or other config management tools) directly modify `~/.claude/settings.json`, you can use the `save` command to save the current configuration as a new profile:
+
+```bash
+cc-switch save
+```
+
+The command will:
+- Automatically detect the current provider type (Anthropic, Zhipu, OpenRouter, etc.)
+- Extract known configuration fields (token, base URL, model names, etc.)
+- Generate smart default ID and name (customizable)
+- Detect similar configurations and warn (avoid duplicates)
+- Mask sensitive token information for security
+
+Example output:
+```
+📦 Current Configuration Detected
+
+Provider: Custom Provider
+Base URL: http://127.0.0.1:8045
+Haiku:    gemini-3-flash
+Sonnet:   claude-sonnet-4-5
+Token:    sk-d7f0...6060
+
+? Profile ID: › example-proxy
+? Profile name: › Example Proxy
+? Description (optional): ›
+? Icon: › 🔌
+
+✓ Saved as "Example Proxy" (example-proxy)
+```
+
+**Auto-save prompt**: When executing `cc-switch use` to switch configurations, if the current config is not saved, the system will automatically prompt whether to save:
+
+```bash
+$ cc-switch use anthropic
+
+⚠️  Current configuration is not saved
+? Save current config before switching? (Y/n) › Yes
+
+? Profile ID: › my-config
+? Profile name: › My Config
+✓ Saved as "My Config"
+
+# Then continue with the switch operation...
+```
+
 ## Configuration Files
 
 Provider profiles are located in `~/.claude/profiles/`:
@@ -143,7 +193,8 @@ Create a JSON file in `~/.claude/profiles/`:
 |---------|-------------|
 | `cc-switch` | Interactive provider selection |
 | `cc-switch add` | Add a new provider profile |
-| `cc-switch use [profile-id]` | Switch to specified provider (optional argument, interactive if not provided) |
+| `cc-switch save` | **Save current config as new profile** (use after external tools modify config) |
+| `cc-switch use [profile-id]` | Switch to specified provider (optional argument, interactive if not provided)<br/>**Auto-detect unsaved configs and prompt to save** |
 | `cc-switch list` | List all available providers |
 | `cc-switch current` | Display current configuration |
 | `cc-switch edit` / `cc-switch modify` | Edit an existing provider profile |
@@ -165,7 +216,9 @@ cc-switch/
 │   │   └── config/
 │   │       ├── schema.ts      # Type definitions
 │   │       ├── loader.ts      # Config reading
-│   │       └── writer.ts      # Config writing (with backup)
+│   │       ├── writer.ts      # Config writing (with backup)
+│   │       ├── creator.ts     # Profile creation (preset templates)
+│   │       └── saver.ts       # Save current config (v1.1.0+)
 │   └── ui/
 │       └── quick-select.ts    # Interactive selection
 ├── package.json
