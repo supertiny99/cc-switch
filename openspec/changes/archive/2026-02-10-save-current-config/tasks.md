@@ -82,7 +82,7 @@
 - [x] 9.2 更新 CLAUDE.md，添加新模块 saver.ts 的架构说明
 - [x] 9.3 在 README 中说明 auto-save 提示功能
 - [x] 9.4 添加使用示例（外部工具修改配置后保存）
-- [ ] 9.5 运行 `npm run build` 编译 TypeScript
-- [ ] 9.6 运行 `npm run link:global` 本地测试
-- [ ] 9.7 版本号升级到 1.1.0 (minor release)
-- [ ] 9.8 运行 `npm run release:minor` 发布到 npm
+- [x] 9.5 运行 `npm run build` 编译 TypeScript
+- [x] 9.6 运行 `npm run link:global` 本地测试
+- [x] 9.7 版本号升级到 1.1.0 (minor release)
+- [x] 9.8 运行 `npm run release:minor` 发布到 npm（已推送到 GitHub，等待 GitHub Actions 自动发布）
