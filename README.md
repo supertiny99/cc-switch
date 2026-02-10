@@ -11,6 +11,8 @@
 - 🔄 **快速切换** - 1-2 秒内完成提供商切换
 - 🎨 **交互式选择** - 支持模糊搜索的友好界面
 - 🔒 **自动备份** - 每次切换前自动备份配置
+- 💾 **保存当前配置** - 将外部工具修改的配置快速保存为新 profile
+- 🔔 **智能提示** - 切换前自动提示保存未保存的配置
 - 📦 **可扩展** - 预留 MCP、技能、插件切换接口
 - 🌍 **多提供商** - 支持任意兼容 Anthropic API 的提供商
 
@@ -101,6 +103,54 @@ cc-switch use anthropic
 cc-switch use
 ```
 
+### 5. 保存当前配置
+
+当外部工具（如 API proxy、其他配置管理工具）直接修改了 `~/.claude/settings.json` 后，可以使用 `save` 命令将当前配置保存为一个新的 profile：
+
+```bash
+cc-switch save
+```
+
+该命令会：
+- 自动检测当前 provider 类型（Anthropic、Zhipu、OpenRouter 等）
+- 提取已知的配置字段（token、base URL、模型名称等）
+- 智能生成默认 ID 和名称（支持自定义）
+- 检测相似配置并提示（避免重复保存）
+- 遮罩显示敏感 token 信息
+
+示例输出：
+```
+📦 Current Configuration Detected
+
+Provider: Custom Provider
+Base URL: http://127.0.0.1:8045
+Haiku:    gemini-3-flash
+Sonnet:   claude-sonnet-4-5
+Token:    sk-d7f0...6060
+
+? Profile ID: › example-proxy
+? Profile name: › Example Proxy
+? Description (optional): ›
+? Icon: › 🔌
+
+✓ Saved as "Example Proxy" (example-proxy)
+```
+
+**自动保存提示**：当执行 `cc-switch use` 切换配置时，如果当前配置未保存，系统会自动提示是否保存：
+
+```bash
+$ cc-switch use anthropic
+
+⚠️  Current configuration is not saved
+? Save current config before switching? (Y/n) › Yes
+
+? Profile ID: › my-config
+? Profile name: › My Config
+✓ Saved as "My Config"
+
+# 然后继续执行切换操作...
+```
+
 ## 配置文件
 
 提供商配置文件位于 `~/.claude/profiles/`：
@@ -143,7 +193,8 @@ cc-switch use
 |------|------|
 | `cc-switch` | 交互式选择提供商 |
 | `cc-switch add` | 添加新的提供商配置 |
-| `cc-switch use [profile-id]` | 切换到指定提供商（可选参数，不提供则交互式选择） |
+| `cc-switch save` | **保存当前配置为新 profile**（外部工具修改配置后使用） |
+| `cc-switch use [profile-id]` | 切换到指定提供商（可选参数，不提供则交互式选择）<br/>**自动检测未保存配置并提示保存** |
 | `cc-switch list` | 列出所有可用提供商 |
 | `cc-switch current` | 显示当前配置 |
 | `cc-switch edit` / `cc-switch modify` | 编辑现有提供商配置 |
@@ -165,7 +216,9 @@ cc-switch/
 │   │   └── config/
 │   │       ├── schema.ts      # 类型定义
 │   │       ├── loader.ts      # 配置读取
-│   │       └── writer.ts      # 配置写入（含备份）
+│   │       ├── writer.ts      # 配置写入（含备份）
+│   │       ├── creator.ts     # Profile 创建（预设模板）
+│   │       └── saver.ts       # 保存当前配置（新功能）
 │   └── ui/
 │       └── quick-select.ts    # 交互式选择
 ├── package.json

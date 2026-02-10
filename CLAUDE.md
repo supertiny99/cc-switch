@@ -46,7 +46,8 @@ src/
 │   ├── schema.ts         # TypeScript interfaces (ProviderProfile, Settings)
 │   ├── loader.ts         # Config loading functions
 │   ├── writer.ts         # Config writing + backup/restore
-│   └── creator.ts        # Provider profile creation and presets
+│   ├── creator.ts        # Provider profile creation and presets
+│   └── saver.ts          # Save current config as profile (v1.1.0+)
 └── ui/
     └── quick-select.ts   # Interactive TUI (prompts library)
 ```
@@ -56,9 +57,10 @@ src/
 **CLI Commands (src/index.ts)**: Defines all CLI commands using Commander.js:
 - `cc-switch` - Interactive provider selection
 - `cc-switch add` - Add a new provider profile with interactive setup
+- `cc-switch save` - Save current config as a new profile (v1.1.0+)
 - `cc-switch delete` / `cc-switch rm` - Delete a provider profile
 - `cc-switch edit` / `cc-switch modify` - Edit an existing provider profile
-- `cc-switch use <id>` - Direct switch to profile
+- `cc-switch use <id>` - Direct switch to profile (with auto-save prompt for unknown configs, v1.1.0+)
 - `cc-switch list` - List available profiles
 - `cc-switch current` - Show current config
 - `cc-switch history` - Show backup history
@@ -85,6 +87,17 @@ src/
 - `restoreBackup(file)` - Restores from backup
 - `deleteProfile(id)` - Deletes a profile file
 - `updateProfile(profile)` - Updates an existing profile
+
+**Config Saver (src/lib/config/saver.ts)**: Save current config as profile (v1.1.0+):
+- `saveCurrentConfig()` - Main function for `cc-switch save` command, with full interactive flow
+- `quickSaveCurrentConfig(settings)` - Fast save mode for auto-save prompts (minimal interaction)
+- `extractKnownFields(env)` - Extracts whitelisted ANTHROPIC_* fields from settings
+- `displayDetectedConfig(config, providerType)` - Shows config summary with masked token
+- `generateSmartId(providerType, config)` - Generates intelligent default ID from URL or provider type
+- `generateSmartName(providerType)` - Generates default name from provider preset
+- `findSimilarProfiles(config)` - Detects existing profiles with same base URL or token prefix
+- `getSimilarityReason(profile, config)` - Returns human-readable similarity reason
+- `maskToken(token)` - Masks sensitive token for display (shows first 7 and last 4 chars)
 
 ### Configuration Structure
 

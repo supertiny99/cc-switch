@@ -4,6 +4,7 @@ import { quickSelect } from './ui/quick-select';
 import { listProfiles, loadProfile, loadSettings, getCurrentProvider, getCurrentProfileId } from './lib/config/loader';
 import { applyProfile, listBackups, restoreBackup, deleteProfile, updateProfile } from './lib/config/writer';
 import { PROVIDER_PRESETS, createProfileFromPreset, saveProfile, profileExists, sanitizeId } from './lib/config/creator';
+import { saveCurrentConfig, quickSaveCurrentConfig } from './lib/config/saver';
 import chalk from 'chalk';
 import prompts from 'prompts';
 
@@ -12,7 +13,7 @@ const program = new Command();
 program
   .name('cc-switch')
   .description('Quick Claude Code configuration switcher')
-  .version('1.0.0');
+  .version('1.1.0');
 
 program
   .action(async () => {
@@ -24,6 +25,45 @@ program
   .description('Switch to a provider profile')
   .action(async (profileIdArg?: string) => {
     try {
+      // 任务 7.1-7.7: Auto-save 检测逻辑
+      const settings = await loadSettings();
+      const currentProfileId = getCurrentProfileId(settings);
+
+      // 任务 7.2: 检查当前配置是否为 unknown
+      if (!currentProfileId) {
+        // 任务 7.3: 显示警告
+        console.log(chalk.yellow('\n⚠️  Current configuration is not saved'));
+
+        // 任务 7.4: 询问是否保存
+        const { saveFirst } = await prompts({
+          type: 'confirm',
+          name: 'saveFirst',
+          message: 'Save current config before switching?',
+          initial: true
+        });
+
+        // 任务 7.6: 处理用户取消（Ctrl+C）
+        if (saveFirst === undefined) {
+          console.log(chalk.yellow('Cancelled'));
+          return;
+        }
+
+        // 任务 7.5: 若用户选择 Yes，调用快速保存
+        if (saveFirst) {
+          try {
+            await quickSaveCurrentConfig(settings);
+            // 任务 7.7: 保存成功后继续执行原有逻辑
+          } catch (err: any) {
+            if (err.message === 'User cancelled') {
+              console.log(chalk.yellow('Cancelled'));
+              return;
+            }
+            console.error(chalk.red(`Error saving config: ${err.message}`));
+            return;
+          }
+        }
+      }
+
       const profiles = await listProfiles();
       if (profiles.length === 0) {
         console.log(chalk.yellow('No profiles found. Run: cc-switch add'));
@@ -365,6 +405,22 @@ program
       console.log(chalk.green(`\n✓ Profile "${profile.name}" (${profile.id}) created successfully!`));
       console.log(chalk.gray(`  Run: cc-switch use ${profile.id}`));
 
+    } catch (err: any) {
+      if (err.message === 'User cancelled') {
+        console.log(chalk.yellow('\nCancelled'));
+        return;
+      }
+      console.error(chalk.red(`Error: ${err.message}`));
+      process.exit(1);
+    }
+  });
+
+program
+  .command('save')
+  .description('Save current config as a new profile')
+  .action(async () => {
+    try {
+      await saveCurrentConfig();
     } catch (err: any) {
       if (err.message === 'User cancelled') {
         console.log(chalk.yellow('\nCancelled'));
