@@ -13,6 +13,7 @@
 - 🔒 **自动备份** - 每次切换前自动备份配置
 - 💾 **保存当前配置** - 将外部工具修改的配置快速保存为新 profile
 - 🔔 **智能提示** - 切换前自动提示保存未保存的配置
+- 🤖 **Agent Teams** - 一键开启/关闭 Claude Code 的 Agent Teams 功能
 - 📦 **可扩展** - 预留 MCP、技能、插件切换接口
 - 🌍 **多提供商** - 支持任意兼容 Anthropic API 的提供商
 
@@ -209,8 +210,62 @@ $ ccs use anthropic
 | `ccs delete` / `ccs rm` | 删除提供商配置 |
 | `ccs history` | 查看备份历史 |
 | `ccs restore <file>` | 从备份恢复 |
+| `ccs agent-teams` | 显示 Agent Teams 状态 |
+| `ccs agent-teams on` | 开启 Agent Teams 功能 |
+| `ccs agent-teams off` | 关闭 Agent Teams 功能 |
+| `ccs agent-teams mode [value]` | 查看或设置 teammateMode |
 | `ccs --version` | 显示版本号 |
 | `ccs --help` | 显示帮助信息 |
+
+## Agent Teams 管理
+
+Claude Code 的 Agent Teams 功能允许多个 AI agent 协作完成复杂任务。ccs 提供便捷的命令来管理此功能。
+
+### 查看状态
+
+```bash
+ccs agent-teams
+```
+
+输出示例：
+```
+Agent Teams Status:
+  Status: 🟢 Enabled
+  Mode: tmux
+```
+
+### 开启/关闭
+
+```bash
+# 开启 Agent Teams（设置 CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1）
+ccs agent-teams on
+
+# 关闭 Agent Teams（删除环境变量）
+ccs agent-teams off
+```
+
+### 配置显示模式
+
+```bash
+# 查看当前模式
+ccs agent-teams mode
+
+# 设置模式（如 tmux）
+ccs agent-teams mode tmux
+```
+
+### 相关配置
+
+开启 Agent Teams 后，settings.json 中会添加以下配置：
+
+```json
+{
+  "env": {
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
+  },
+  "teammateMode": "tmux"
+}
+```
 
 ## 开发
 

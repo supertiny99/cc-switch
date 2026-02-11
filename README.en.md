@@ -13,6 +13,7 @@ When your token quota is exhausted, you can quickly switch to another provider/t
 - 🔒 **Auto Backup** - Automatically backs up config before each switch
 - 💾 **Save Current Config** - Quickly save externally modified configs as new profiles
 - 🔔 **Smart Prompts** - Auto-prompt to save unsaved configs before switching
+- 🤖 **Agent Teams** - One-click enable/disable Claude Code's Agent Teams feature
 - 📦 **Extensible** - Reserved interfaces for MCP, skills, and plugin switching
 - 🌍 **Multi-provider** - Supports any Anthropic API-compatible provider
 
@@ -209,8 +210,62 @@ Create a JSON file in `~/.claude/profiles/`:
 | `cc-switch delete` / `cc-switch rm` | Delete a provider profile |
 | `cc-switch history` | View backup history |
 | `cc-switch restore <file>` | Restore from backup |
+| `ccs agent-teams` | Display Agent Teams status |
+| `ccs agent-teams on` | Enable Agent Teams feature |
+| `ccs agent-teams off` | Disable Agent Teams feature |
+| `ccs agent-teams mode [value]` | View or set teammateMode |
 | `cc-switch --version` | Display version number |
 | `cc-switch --help` | Display help information |
+
+## Agent Teams Management
+
+Claude Code's Agent Teams feature allows multiple AI agents to collaborate on complex tasks. ccs provides convenient commands to manage this feature.
+
+### View Status
+
+```bash
+ccs agent-teams
+```
+
+Example output:
+```
+Agent Teams Status:
+  Status: 🟢 Enabled
+  Mode: tmux
+```
+
+### Enable/Disable
+
+```bash
+# Enable Agent Teams (sets CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1)
+ccs agent-teams on
+
+# Disable Agent Teams (removes the environment variable)
+ccs agent-teams off
+```
+
+### Configure Display Mode
+
+```bash
+# View current mode
+ccs agent-teams mode
+
+# Set mode (e.g., tmux)
+ccs agent-teams mode tmux
+```
+
+### Related Configuration
+
+After enabling Agent Teams, the following configuration is added to settings.json:
+
+```json
+{
+  "env": {
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
+  },
+  "teammateMode": "tmux"
+}
+```
 
 ## Development
 
