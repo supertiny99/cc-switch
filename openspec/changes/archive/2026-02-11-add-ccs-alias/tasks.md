@@ -47,9 +47,9 @@
 
 ## 7. 发布到 npm
 
-- [ ] 7.1 提交所有代码变更到 git
-- [ ] 7.2 创建版本标签 `git tag vX.X.X`
-- [ ] 7.3 推送代码和标签到 GitHub
-- [ ] 7.4 等待 GitHub Actions 自动发布到 npm
-- [ ] 7.5 验证新版本在 npm 上可见
-- [ ] 7.6 测试从 npm 安装新版本并验证 `ccs` 命令可用
+- [x] 7.1 提交所有代码变更到 git
+- [x] 7.2 创建版本标签 `git tag vX.X.X`
+- [x] 7.3 推送代码和标签到 GitHub
+- [x] 7.4 等待 GitHub Actions 自动发布到 npm
+- [x] 7.5 验证新版本在 npm 上可见
+- [x] 7.6 测试从 npm 安装新版本并验证 `ccs` 命令可用

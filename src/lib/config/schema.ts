@@ -22,5 +22,6 @@ export interface Settings {
   enabledPlugins?: Record<string, boolean>;
   permissions?: { allow?: string[] };
   statusLine?: { type?: string; command?: string };
+  teammateMode?: string;
   [key: string]: any;
 }

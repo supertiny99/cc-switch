@@ -5,6 +5,7 @@ import { listProfiles, loadProfile, loadSettings, getCurrentProvider, getCurrent
 import { applyProfile, listBackups, restoreBackup, deleteProfile, updateProfile } from './lib/config/writer';
 import { PROVIDER_PRESETS, createProfileFromPreset, saveProfile, profileExists, sanitizeId } from './lib/config/creator';
 import { saveCurrentConfig, quickSaveCurrentConfig } from './lib/config/saver';
+import { getAgentTeamsStatus, enableAgentTeams, disableAgentTeams, setTeammateMode } from './lib/config/agent-teams';
 import chalk from 'chalk';
 import prompts from 'prompts';
 
@@ -184,6 +185,13 @@ program
 
       if (currentProfile?.description) {
         console.log(`  Description: ${chalk.gray(currentProfile.description)}`);
+      }
+
+      const agentTeamsStatus = await getAgentTeamsStatus();
+      if (agentTeamsStatus.enabled) {
+        console.log(`  Agent Teams: ${chalk.green('Enabled')} (mode: ${chalk.cyan(agentTeamsStatus.teammateMode || 'not set')})`);
+      } else {
+        console.log(`  Agent Teams: ${chalk.gray('Disabled')}`);
       }
     } catch (err: any) {
       console.error(chalk.red(`Error: ${err.message}`));
@@ -426,6 +434,85 @@ program
         console.log(chalk.yellow('\nCancelled'));
         return;
       }
+      console.error(chalk.red(`Error: ${err.message}`));
+      process.exit(1);
+    }
+  });
+
+const agentTeamsCommand = program
+  .command('agent-teams')
+  .description('Manage Agent Teams feature')
+  .action(async () => {
+    try {
+      const status = await getAgentTeamsStatus();
+      console.log(chalk.bold('Agent Teams Status:'));
+      if (status.enabled) {
+        console.log(`  Status: ${chalk.green('🟢 Enabled')}`);
+        console.log(`  Mode: ${chalk.cyan(status.teammateMode || 'not set')}`);
+      } else {
+        console.log(`  Status: ${chalk.gray('⚫ Disabled')}`);
+      }
+    } catch (err: any) {
+      console.error(chalk.red(`Error: ${err.message}`));
+      process.exit(1);
+    }
+  });
+
+agentTeamsCommand
+  .command('on')
+  .description('Enable Agent Teams')
+  .action(async () => {
+    try {
+      const status = await getAgentTeamsStatus();
+      if (status.enabled) {
+        console.log(chalk.yellow('Agent Teams is already enabled'));
+        return;
+      }
+      await enableAgentTeams();
+      console.log(chalk.green('✓ Agent Teams enabled'));
+      const newStatus = await getAgentTeamsStatus();
+      console.log(chalk.gray(`  Mode: ${newStatus.teammateMode}`));
+    } catch (err: any) {
+      console.error(chalk.red(`Error: ${err.message}`));
+      process.exit(1);
+    }
+  });
+
+agentTeamsCommand
+  .command('off')
+  .description('Disable Agent Teams')
+  .action(async () => {
+    try {
+      const status = await getAgentTeamsStatus();
+      if (!status.enabled) {
+        console.log(chalk.yellow('Agent Teams is already disabled'));
+        return;
+      }
+      await disableAgentTeams();
+      console.log(chalk.green('✓ Agent Teams disabled'));
+    } catch (err: any) {
+      console.error(chalk.red(`Error: ${err.message}`));
+      process.exit(1);
+    }
+  });
+
+agentTeamsCommand
+  .command('mode [value]')
+  .description('Get or set teammate mode')
+  .action(async (value?: string) => {
+    try {
+      if (!value) {
+        const status = await getAgentTeamsStatus();
+        if (status.teammateMode) {
+          console.log(`Teammate mode: ${chalk.cyan(status.teammateMode)}`);
+        } else {
+          console.log(chalk.gray('Teammate mode: (not set)'));
+        }
+        return;
+      }
+      await setTeammateMode(value);
+      console.log(chalk.green(`✓ Teammate mode set to: ${value}`));
+    } catch (err: any) {
       console.error(chalk.red(`Error: ${err.message}`));
       process.exit(1);
     }
